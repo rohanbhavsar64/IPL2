@@ -41,6 +41,10 @@ df1=df[['Match ID','Venue','Bat First','Bat Second','Innings','Over','Ball','Bat
 df1['balls_left']=120-(6*(df1['Over']-1)+df1['Ball'])
 
 first=df1[df1['Innings']==1]
+option = st.selectbox(
+    'Choose your match Id',
+    first['Match ID'].unique()
+)
 first['crr']=first['Innings Runs']*6/(120-first['balls_left'])
 
 first=first[['Match ID','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five','Target Score']]
@@ -80,10 +84,7 @@ def match_progression(x_df,Id,pipe):
     temp_df['end_of_over'] = range(1,temp_df.shape[0]+1)
     temp_df = temp_df[['end_of_over','Innings Runs','projected_score']]
     return temp_df
-option = st.selectbox(
-    'Choose your match Id',
-    first['Match ID'].unique()
-)
+
 if option is not None:
     temp_df = match_progression(first,option,pipe)
     st.write(temp_df)
