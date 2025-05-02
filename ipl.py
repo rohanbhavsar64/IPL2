@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
-df=pd.read_csv('ball_by_ball_ipl.csv')
+import streamlit as st
+df=pd.read_csv('ipl.csv')
 df['Over'] = df['Over'].astype(int)
 df['Ball'] = df['Ball'].astype(int)
 import pandas as pd
@@ -81,4 +82,4 @@ def match_progression(x_df,Id,pipe):
     return temp_df
 temp_df = match_progression(first,1359508,pipe)
 
-print(temp_df)
+st.write(temp_df)
