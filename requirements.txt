@@ -1,5 +1,6 @@
 pandas
 plotly
-numpy 
-bs4
-requests
+scikit-learn
+numpy
+streamlit
+
