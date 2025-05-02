@@ -84,6 +84,6 @@ option = st.selectbox(
     'Choose your match Id',
     first['Match ID'].unique()
 )
-temp_df = match_progression(first,1359508,pipe)
-
-st.write(temp_df)
+if option is not None:
+    temp_df = match_progression(first,option,pipe)
+    st.write(temp_df)
