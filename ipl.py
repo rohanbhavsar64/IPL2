@@ -59,7 +59,7 @@ def match_progression(x_df,Id,pipe):
     result = pipe.predict(temp_df)
     temp_df['projected_score'] = np.round(result,1)
     temp_df['end_of_over'] = range(1,temp_df.shape[0]+1)
-    temp_df = temp_df[['end_of_over','Innings Runs','projected_score']]
+    temp_df = temp_df[['end_of_over','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five','projected_score']]
     return temp_df
 option=st.selectbox('Enter match ID',first['Match ID'].unique())
 if option is not None:
