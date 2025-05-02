@@ -80,6 +80,10 @@ def match_progression(x_df,Id,pipe):
     temp_df['end_of_over'] = range(1,temp_df.shape[0]+1)
     temp_df = temp_df[['end_of_over','Innings Runs','projected_score']]
     return temp_df
+option = st.selectbox(
+    'Choose your match Id',
+    first['Match ID'].unique()
+)
 temp_df = match_progression(first,1359508,pipe)
 
 st.write(temp_df)
