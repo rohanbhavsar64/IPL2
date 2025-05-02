@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
-from matplotlib import pyplot as plt
 df=pd.read_csv('ball_by_ball_ipl.csv')
 df['Over'] = df['Over'].astype(int)
 df['Ball'] = df['Ball'].astype(int)
@@ -21,7 +20,7 @@ def compute_last_five(group):
     return group
 
 df = df.groupby(['Match ID', 'Innings']).apply(compute_last_five).reset_index(drop=True)
-print(df)
+#print(df)
 df['year'] = pd.to_datetime(df['Date']).dt.year
 # Group by Batter and sum the 'Innings Runs' (or use the correct runs column)
 batter_runs = df.groupby('Batter')['Batter Runs'].sum().reset_index()
@@ -44,7 +43,7 @@ first=df1[df1['Innings']==1]
 first['crr']=first['Innings Runs']*6/(120-first['balls_left'])
 
 first=first[['Match ID','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five','Target Score']]
-print(first[first['Match ID']==1359507])
+#print(first[first['Match ID']==1359507])
 x=first.drop(columns='Target Score')
 y=first['Target Score']
 from sklearn.model_selection import train_test_split
@@ -65,12 +64,21 @@ pipe=Pipeline(
         ('step2',LinearRegression())
     ])
 pipe.fit(xtrain,ytrain)
-print(pipe.predict(xtest)[1])
+print(pipe.predict(xtest)[56])
 
-#n=pipe.predict_proba(pd.DataFrame(columns=['batting_team','bowling_team','city','batsman','non_striker','runs_left','ball_left','wickets_left','total_runs_x','crr','rrr','last_five','last_five_wicket'],data=np.array(['Royal Challengers Bangalore','Chennai Super Kings','Indore','Dhoni','Sundar',63,42,7,2,11.23,9.00,33,2.0]).reshape(1,13))).astype(float)
+def match_progression(x_df,Id,pipe):
+    match = x_df[x_df['Match ID'] ==Id]
+    match = match[(match['balls_left']%6 == 0)]
+    temp_df = match[['Match ID','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five']].fillna(0)
+    temp_df = temp_df[temp_df['balls_left'] != 0]
+    if temp_df.empty:
+        print("Error: Match is not Existed")
+        return None, None
+    result = pipe.predict(temp_df)
+    temp_df['projected_score'] = np.round(result,1)
+    temp_df['end_of_over'] = range(1,temp_df.shape[0]+1)
+    temp_df = temp_df[['end_of_over','Innings Runs','projected_score']]
+    return temp_df
+temp_df = match_progression(first,1359508,pipe)
 
-#print("Win Chances of Batting team is:", n[0][1]*100,"%")
-#print("Win Chances of Bowling team is:", n[0][0]*100,"%")
-
-
-
+print(temp_df)
