@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import streamlit as st
+import pickle
 df=pd.read_csv('ipl.csv')
 with open('iris_pipeline.pkl', 'rb') as f:
     pipe = pickle.load(f)
