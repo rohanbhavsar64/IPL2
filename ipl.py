@@ -4,7 +4,6 @@ import plotly.express as px
 import streamlit as st
 import pickle
 df=pd.read_csv('ipl.csv')
-df=pd.read_csv('ball_by_ball_ipl.csv')
 df['Over'] = df['Over'].astype(int)
 df['Ball'] = df['Ball'].astype(int)
 import pandas as pd
