@@ -64,4 +64,6 @@ def match_progression(x_df,Id,pipe):
 option=st.selectbox('Enter match ID',first['Match ID'].unique())
 if option is not None:
     temp_df = match_progression(first,option,pipe)
-    st.write(temp_df)
+    temp_df['over']=(120-temp_df['balls_left'])/6
+    fig=px.line(temp_df['projected_score'],temp_df['over'])
+    st.write(fig)
