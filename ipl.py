@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 import zipfile
 import os
-
+import plotly.graph_objects as go
 # --- Extract ZIP if not already done ---
 zip_file = "match_outcome_pipeline1.zip"
 extracted_model_path = "match_outcome_pipeline.pkl"
@@ -43,8 +43,7 @@ target = st.number_input("Target Score", min_value=0, value=350)
 last_15_wickets = st.slider("Wickets Lost in Last 15 Overs", min_value=0, max_value=10, value=2)
 
 if st.button("Predict Outcome"):
-    # Prepare input
-    input_data = pd.DataFrame([{
+    input_df = pd.DataFrame([{
         "batting_team": batting_team,
         "bowling_team": bowling_team,
         "over": over,
@@ -57,14 +56,21 @@ if st.button("Predict Outcome"):
         "last_15_wickets": last_15_wickets
     }])
 
-    # Prediction
-    probs = pipeline.predict_proba(input_data)[0]
-    labels = pipeline.classes_
+    probs = pipeline.predict_proba(input_df)[0]
+    classes = pipeline.classes_
 
-    st.subheader("🧠 Predicted Outcome Probabilities:")
-    st.write(f"Batting: **{batting_team}** vs Bowling: **{bowling_team}**")
+    fig = go.Figure(data=[go.Pie(
+        labels=classes,
+        values=probs,
+        hole=0.5,
+        textinfo='label+percent',
+        hoverinfo='label+value+percent',
+        marker=dict(colors=['#1f77b4', '#ff7f0e', '#2ca02c'])
+    )])
 
-    for label, prob in zip(labels, probs):
-        st.write(f"**{label.upper()}**: {prob*100:.2f}%")
+    fig.update_layout(
+        title_text=f"📊 Prediction Probabilities **{batting_team}**",
+        annotations=[dict(text='Outcome', x=0.5, y=0.5, font_size=20, showarrow=False)]
+    )
 
-    st.success("Prediction complete!")
+    st.plotly_chart(fig)
