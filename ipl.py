@@ -1,19 +1,10 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import zipfile
-import os
 import plotly.graph_objects as go
-# --- Extract ZIP if not already done ---
-zip_file = "match_outcome_pipeline1.zip"
-extracted_model_path = "match_outcome_pipeline.pkl"
 
-if not os.path.exists(extracted_model_path):
-    with zipfile.ZipFile(zip_file, 'r') as zip_ref:
-        zip_ref.extractall()
-
-# --- Load the pipeline ---
-with open(extracted_model_path, "rb") as f:
+# Load saved pipeline
+with open("match_outcome_pipeline.pkl", "rb") as f:
     pipeline = pickle.load(f)
 
 st.set_page_config(page_title="Cricket Match Outcome Predictor", layout="centered")
