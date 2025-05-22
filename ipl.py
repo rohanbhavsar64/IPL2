@@ -37,6 +37,7 @@ if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
         "batting_team": batting_team,
         "bowling_team": bowling_team,
+        "city":city,
         "over": over,
         "wickets": wickets,
         "current_score": current_score,
