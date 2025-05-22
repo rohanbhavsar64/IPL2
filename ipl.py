@@ -51,7 +51,7 @@ if st.button("Predict Outcome"):
     probs = pipeline.predict_proba(input_df)[0]
     classes = pipeline.classes_
     fig = go.Figure(data=[go.Pie(
-        labels=pipeline.classes_,
+        labels=[batting_team,'draw',bowling_team],
         values=probs,
         hole=0.5,
         textinfo='label+percent',
