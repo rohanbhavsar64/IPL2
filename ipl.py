@@ -1,69 +1,60 @@
-import pandas as pd
-import numpy as np
-import plotly.express as px
 import streamlit as st
-import pickle
-df=pd.read_csv('ipl.csv')
-df['Over'] = df['Over'].astype(int)
-df['Ball'] = df['Ball'].astype(int)
 import pandas as pd
+import pickle
 
-# Assuming Over and Ball columns are integers
-df['Balls'] = df['Over'] * 6 + df['Ball']
+# Load saved pipeline
+with open("match_outcome_pipeline.pkl", "rb") as f:
+    pipeline = pickle.load(f)
 
-# Sort the data to ensure correct order
-df = df.sort_values(by=['Match ID', 'Innings', 'Balls'])
+st.set_page_config(page_title="Cricket Match Outcome Predictor", layout="centered")
+st.title("🏏 Cricket Match Outcome Predictor")
 
-# Group by match and innings to calculate rolling difference
-def compute_last_five(group):
-    group = group.copy()
-    group['last_five'] = group['Innings Runs'] - group['Innings Runs'].shift(18)
-    group['last_five'] = group['last_five'].fillna(0)  # For first 18 balls, set to 0
-    return group
+st.markdown("Enter match details below to predict the **outcome probabilities**:")
 
-df = df.groupby(['Match ID', 'Innings']).apply(compute_last_five).reset_index(drop=True)
-#print(df)
-df['year'] = pd.to_datetime(df['Date']).dt.year
-# Group by Batter and sum the 'Innings Runs' (or use the correct runs column)
-batter_runs = df.groupby('Batter')['Batter Runs'].sum().reset_index()
-top_batters = batter_runs.sort_values(by='Batter Runs', ascending=False).head(10)
-fig = px.bar(top_batters, x='Batter', y='Batter Runs', title='Top 10 Batters by Total Runs')
-# Filter for only the first innings
-first_innings = df[df['Innings'] == 1]
+# Team options (should match training data)
+team_options = [
+    'India', 'Australia', 'England', 'Pakistan', 'New Zealand',
+    'South Africa', 'Sri Lanka', 'Bangladesh', 'Afghanistan', 'West Indies'
+]
 
-# Group by Match ID and Year to get total first innings score per match
-match_scores = first_innings.groupby(['Match ID', 'year'])['Innings Runs'].max().reset_index()
+# Input widgets
+batting_team = st.selectbox("Batting Team", team_options)
+bowling_team = st.selectbox("Bowling Team", team_options)
 
-# Now group by year to get average first innings score
-yearly_avg = match_scores.groupby('year')['Innings Runs'].mean().reset_index()
-# Plotting with Matplotlib
-fig = px.bar(yearly_avg, x='year', y='Innings Runs', title='Avg. 1st Innings Scores per year')
-df1=df[['Match ID','Venue','Bat First','Bat Second','Innings','Over','Ball','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','Target Score','Runs to Get','Balls Remaining','last_five','Winner']]
-df1['balls_left']=120-(6*(df1['Over']-1)+df1['Ball'])
+over = st.slider("Current Over", min_value=1, max_value=150, value=50)
+wickets = st.slider("Wickets Lost", min_value=0, max_value=10, value=5)
+current_score = st.number_input("Current Score", min_value=0, value=200)
 
-first=df1[df1['Innings']==1]
-first['crr']=first['Innings Runs']*6/(120-first['balls_left'])
+first_inning_total = st.number_input("First Inning Total", min_value=0, value=300)
+second_inning_total = st.number_input("Second Inning Total", min_value=0, value=200)
+third_inning_total = st.number_input("Third Inning Total", min_value=0, value=250)
+target = st.number_input("Target Score", min_value=0, value=350)
 
-first=first[['Match ID','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five','Target Score']]
-#print(first[first['Match ID']==1359507])
-with open('iris_pipeline.pkl', 'rb') as f:
-    pipe = pickle.load(f)
-def match_progression(x_df,Id,pipe):
-    match = x_df[x_df['Match ID'] ==Id]
-    match = match[(match['balls_left']%6 == 0)]
-    temp_df = match[['Match ID','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five']].fillna(0)
-    temp_df = temp_df[temp_df['balls_left'] != 0]
-    if temp_df.empty:
-        print("Error: Match is not Existed")
-        return None, None
-    result = pipe.predict(temp_df)
-    temp_df['projected_score'] = np.round(result,1)
-    temp_df['end_of_over'] = range(1,temp_df.shape[0]+1)
-    temp_df = temp_df[['end_of_over','Venue','Bat First','Bat Second','Batter','Non Striker','Bowler','Innings Runs','Innings Wickets','balls_left','crr','last_five','projected_score']]
-    return temp_df
-option=st.selectbox('Enter match ID',first['Match ID'].unique())
-if option is not None:
-    temp_df = match_progression(first,option,pipe)
-    temp_df['over']=(120-temp_df['balls_left'])/6
-    fig = px.line(temp_df, x='over', y='projected_score', title='Projected Score Over Time')
-    st.write(fig)
+last_15_wickets = st.slider("Wickets Lost in Last 15 Overs", min_value=0, max_value=10, value=2)
+
+if st.button("Predict Outcome"):
+    # Prepare input
+    input_data = pd.DataFrame([{
+        "batting_team": batting_team,
+        "bowling_team": bowling_team,
+        "over": over,
+        "wickets": wickets,
+        "current_score": current_score,
+        "first_inning_total": first_inning_total,
+        "second_inning_total": second_inning_total,
+        "third_inning_total": third_inning_total,
+        "target": target,
+        "last_15_wickets": last_15_wickets
+    }])
+
+    # Prediction
+    probs = pipeline.predict_proba(input_data)[0]
+    labels = pipeline.classes_
+
+    st.subheader("🧠 Predicted Outcome Probabilities:")
+    st.write(f"Batting: **{batting_team}** vs Bowling: **{bowling_team}**")
+
+    for label, prob in zip(labels, probs):
+        st.write(f"**{label.upper()}**: {prob*100:.2f}%")
+
+    st.success("Prediction complete!")
