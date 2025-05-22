@@ -50,7 +50,7 @@ if st.button("Predict Outcome"):
 
     probs = pipeline.predict_proba(input_df)[0]
     classes = pipeline.classes_
-
+    labels=[batting_team, bowling_team,'draw']
     fig = go.Figure(data=[go.Pie(
         labels=classes,
         values=probs,
@@ -61,7 +61,7 @@ if st.button("Predict Outcome"):
     )])
 
     fig.update_layout(
-        title_text=f"📊 Prediction Probabilities **{batting_team}**",
+        title_text=f"📊 Prediction Probabilities",
         annotations=[dict(text='Outcome', x=0.5, y=0.5, font_size=20, showarrow=False)]
     )
 
