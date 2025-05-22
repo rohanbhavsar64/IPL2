@@ -61,7 +61,7 @@ if st.button("Predict Outcome"):
 
     fig.update_layout(
         title_text=f"📊 Prediction Probabilities",
-        annotations=[dict(text='Outcome', x=0.5, y=0.5, font_size=20, showarrow=False)]
+        annotations=[dict(text='Predicator', x=0.5, y=0.5, font_size=20, showarrow=False)]
     )
 
     st.plotly_chart(fig)
