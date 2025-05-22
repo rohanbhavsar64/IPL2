@@ -21,7 +21,7 @@ team_options = [
 # Input widgets
 batting_team = st.selectbox("Batting Team", team_options)
 bowling_team = st.selectbox("Bowling Team", team_options)
-
+city=st.text_input("city")
 over = st.slider("Current Over", min_value=1, max_value=150, value=50)
 wickets = st.slider("Wickets Lost", min_value=0, max_value=10, value=5)
 current_score = st.number_input("Current Score", min_value=0, value=200)
