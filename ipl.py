@@ -33,6 +33,9 @@ target = st.number_input("Target Score", min_value=0, value=350)
 
 last_15_wickets = st.slider("Wickets Lost in Last 15 Overs", min_value=0, max_value=10, value=2)
 over_left=st.number_input("Overs Left in Game")
+runs_left=st.number_input("runs required to win")
+rrr=st.number_input("Required run rate")
+crr=st.number_input("current run rate")
 
 if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
@@ -47,7 +50,10 @@ if st.button("Predict Outcome"):
         "third_inning_total": third_inning_total,
         "target": target,
         "last_15_wickets": last_15_wickets,
-        "over_left":over_left
+        "over_left":over_left,
+        "runs_left":runs_left,
+        "rrr":rrr,
+        "crr",crr
     }])
 
     probs = pipeline.predict_proba(input_df)[0]
