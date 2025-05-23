@@ -53,7 +53,7 @@ if st.button("Predict Outcome"):
         "over_left":over_left,
         "runs_left":runs_left,
         "rrr":rrr,
-        "crr",crr
+        "crr":crr
     }])
 
     probs = pipeline.predict_proba(input_df)[0]
