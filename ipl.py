@@ -22,7 +22,7 @@ team_options = [
 batting_team = st.selectbox("Batting Team", team_options)
 bowling_team = st.selectbox("Bowling Team", team_options)
 city=st.text_input("city")
-over = st.slider("Current Over", min_value=1, max_value=150, value=50)
+over = st.slider("Current Over", min_value=1, max_value=200, value=50)
 wickets = st.slider("Wickets Lost", min_value=0, max_value=10, value=5)
 current_score = st.number_input("Current Score", min_value=0, value=200)
 
@@ -32,6 +32,7 @@ third_inning_total = st.number_input("Third Inning Total", min_value=0, value=25
 target = st.number_input("Target Score", min_value=0, value=350)
 
 last_15_wickets = st.slider("Wickets Lost in Last 15 Overs", min_value=0, max_value=10, value=2)
+over_left=st.number_input("Overs Left in Game")
 
 if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
@@ -45,7 +46,8 @@ if st.button("Predict Outcome"):
         "second_inning_total": second_inning_total,
         "third_inning_total": third_inning_total,
         "target": target,
-        "last_15_wickets": last_15_wickets
+        "last_15_wickets": last_15_wickets,
+        "over_left":over_left
     }])
 
     probs = pipeline.predict_proba(input_df)[0]
