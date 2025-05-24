@@ -37,7 +37,7 @@ over_left=st.number_input("Overs Left in Game")
 runs_left=st.number_input("runs required to win")
 rrr=st.number_input("Required run rate")
 crr=st.number_input("current run rate")
-day_left=st.selectbox('day left in a game',option)
+day_left=st.selectbox('day left in a game',options)
 if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
         "batting_team": batting_team,
