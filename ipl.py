@@ -17,6 +17,7 @@ team_options = [
     'India', 'Australia', 'England', 'Pakistan', 'New Zealand',
     'South Africa', 'Sri Lanka', 'Bangladesh', 'Afghanistan', 'West Indies'
 ]
+options = [1,2,3,4,5]
 
 # Input widgets
 batting_team = st.selectbox("Batting Team", team_options)
@@ -36,7 +37,7 @@ over_left=st.number_input("Overs Left in Game")
 runs_left=st.number_input("runs required to win")
 rrr=st.number_input("Required run rate")
 crr=st.number_input("current run rate")
-day_left=over_left/90
+day_left=st.selectbox('day left in a game',option)
 if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
         "batting_team": batting_team,
