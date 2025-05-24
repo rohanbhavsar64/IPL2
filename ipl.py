@@ -36,7 +36,7 @@ over_left=st.number_input("Overs Left in Game")
 runs_left=st.number_input("runs required to win")
 rrr=st.number_input("Required run rate")
 crr=st.number_input("current run rate")
-
+day_left=over_left/90
 if st.button("Predict Outcome"):
     input_df = pd.DataFrame([{
         "batting_team": batting_team,
@@ -53,7 +53,8 @@ if st.button("Predict Outcome"):
         "over_left":over_left,
         "runs_left":runs_left,
         "rrr":rrr,
-        "crr":crr
+        "crr":crr,
+        "day_left":day_left
     }])
 
     probs = pipeline.predict_proba(input_df)[0]
